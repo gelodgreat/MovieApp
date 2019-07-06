@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Layout, ListItem, List } from "react-native-ui-kitten";
+import { Layout, ListItem, List, Input } from "react-native-ui-kitten";
 import { Image } from "react-native-elements";
 var self;
 
@@ -25,16 +25,33 @@ export default class Home extends Component {
       });
       var jsonized = await response.json();
       this.setState({ trendingMovies: jsonized.results });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  inputChange(input) {
-    this.setState({ input });
+  async searchMovies(movieSearch) {
+    try {
+      var response = await fetch(
+        "https://api.themoviedb.org/3/search/movie?api_key=f95f50d1981cb3d3febf773bf6938429&language=en-US&query=" +
+          movieSearch
+      ).catch(error => {
+        console.error(error);
+      });
+      var jsonized = await response.json();
+      this.setState({ trendingMovies: jsonized.results });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   render() {
     return (
       <Layout style={{ flex: 2, padding: 10 }}>
+        <Input
+          placeholder="Search Movies"
+          onChangeText={searchMovie => this.searchMovies(searchMovie)}
+        />
         <List data={this.state.trendingMovies} renderItem={ListItemShowcase} />
       </Layout>
     );

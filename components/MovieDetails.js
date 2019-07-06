@@ -37,12 +37,13 @@ export default class MovieDetails extends Component {
     return (
       <Layout style={{ flex: 2 }}>
         <Card title={movieData.title}>
-          <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
           <Image
             source={{
               uri: "https://image.tmdb.org/t/p/original" + movieData.poster_path
             }}
           />
+          <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
+
           <Text>Budget: {movieData.budget}</Text>
         </Card>
       </Layout>
