@@ -32,14 +32,18 @@ export default class Home extends Component {
 
   async searchMovies(movieSearch) {
     try {
-      var response = await fetch(
-        "https://api.themoviedb.org/3/search/movie?api_key=f95f50d1981cb3d3febf773bf6938429&language=en-US&query=" +
-          movieSearch
-      ).catch(error => {
-        console.error(error);
-      });
-      var jsonized = await response.json();
-      this.setState({ trendingMovies: jsonized.results });
+      if (movieSearch == "") {
+        this.getTrendingMovies();
+      } else {
+        var response = await fetch(
+          "https://api.themoviedb.org/3/search/movie?api_key=f95f50d1981cb3d3febf773bf6938429&language=en-US&query=" +
+            movieSearch
+        ).catch(error => {
+          console.error(error);
+        });
+        var jsonized = await response.json();
+        this.setState({ trendingMovies: jsonized.results });
+      }
     } catch (error) {
       console.log(error);
     }
