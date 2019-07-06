@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Layout, Text } from "react-native-ui-kitten";
+import { Layout, Text, Button } from "react-native-ui-kitten";
 import { Image, Card } from "react-native-elements";
-import { ScrollView } from "react-native";
+import { ScrollView, AsyncStorage } from "react-native";
 import MovieReviews from "./MovieReviews";
+var mySessionId, accountId, myToken, self;
 
 var self;
 
@@ -30,7 +31,9 @@ export default class MovieDetails extends Component {
   async componentDidMount() {
     self = this;
     var movieDetailsData = await this.getMovieDetails();
-
+    mySessionId = await AsyncStorage.getItem("mySessionId");
+    accountId = await AsyncStorage.getItem("accountId");
+    myToken = await AsyncStorage.getItem("myToken");
     self.setState({
       movieDetails: movieDetailsData,
       loading: false
@@ -54,6 +57,34 @@ export default class MovieDetails extends Component {
         reject(error);
       }
     });
+  }
+
+  async addToWatchList() {
+    try {
+      var data = {
+        media_type: "movie",
+        media_id: this.state.movieDetails.id,
+        watchlist: true
+      };
+      console.log(data);
+      var addToWatchListRequest = await fetch(
+        "https://api.themoviedb.org/3/account/" +
+          accountId +
+          "/watchlist?api_key=f95f50d1981cb3d3febf773bf6938429&session_id=" +
+          mySessionId,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json;charset=utf-8"
+          },
+          body: JSON.stringify(data)
+        }
+      );
+      var addToWatchListResponse = await addToWatchListRequest.json();
+      console.log(addToWatchListResponse);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   render() {
@@ -81,6 +112,14 @@ export default class MovieDetails extends Component {
               <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
               <Text>Budget: {movieData.budget}</Text>
               <Text>Rating:{movieData.vote_average}</Text>
+              <Button
+                style={{ margin: 10 }}
+                onPress={() => {
+                  this.addToWatchList();
+                }}
+              >
+                Add to Watchlist
+              </Button>
             </Card>
             <MovieReviews id={this.props.navigation.state.params.id} />
           </Layout>

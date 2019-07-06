@@ -91,7 +91,6 @@ export default class Login extends Component {
         await AsyncStorage.setItem("myToken", loginResponse.request_token);
         var accountDetails = await this.getAccountDetails(session_id);
         await AsyncStorage.setItem("accountId", accountDetails.id.toString());
-        console.log(session_id, accountDetails.id);
         this.props.navigation.navigate("Home");
       }
     } catch (error) {
