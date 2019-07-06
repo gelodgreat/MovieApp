@@ -3,6 +3,7 @@ import { Layout, Text, Button } from "react-native-ui-kitten";
 import { Image, Card } from "react-native-elements";
 import { ScrollView, AsyncStorage } from "react-native";
 import MovieReviews from "./MovieReviews";
+import { Rating, AirbnbRating } from "react-native-ratings";
 var mySessionId, accountId, myToken, self;
 
 var self;
@@ -24,6 +25,7 @@ export default class MovieDetails extends Component {
     this.state = {
       movieId: this.props.navigation.state.params.id,
       movieDetails: {},
+      movieRating: 3,
       loading: true
     };
   }
@@ -79,7 +81,57 @@ export default class MovieDetails extends Component {
           body: JSON.stringify(data)
         }
       );
-      var addToWatchListResponse = await addToWatchListRequest.json();
+      await addToWatchListRequest.json();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  ratingCompleted(rating) {
+    self.submitRating(rating * 2);
+  }
+
+  async submitRating(rating) {
+    try {
+      var data = {
+        value: rating
+      };
+      var rateMovie = await fetch(
+        "https://api.themoviedb.org/3/movie/" +
+          this.state.movieDetails.id +
+          "/rating?api_key=f95f50d1981cb3d3febf773bf6938429&session_id=" +
+          mySessionId,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json;charset=utf-8"
+          },
+          body: JSON.stringify(data)
+        }
+      );
+      await rateMovie.json();
+      console.log("Success");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async deleteRating() {
+    try {
+      var rateMovie = await fetch(
+        "https://api.themoviedb.org/3/movie/" +
+          this.state.movieDetails.id +
+          "/rating?api_key=f95f50d1981cb3d3febf773bf6938429&session_id=" +
+          mySessionId,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json;charset=utf-8"
+          }
+        }
+      );
+      await rateMovie.json();
+      console.log("Success Deletion");
     } catch (error) {
       console.log(error);
     }
@@ -110,6 +162,23 @@ export default class MovieDetails extends Component {
               <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
               <Text>Budget: {movieData.budget}</Text>
               <Text>Rating:{movieData.vote_average}</Text>
+
+              <Rating
+                id={movieData.id}
+                showRating
+                style={{ paddingVertical: 10 }}
+                onFinishRating={this.ratingCompleted}
+              />
+              <Button
+                style={{ margin: 10 }}
+                status="danger"
+                onPress={() => {
+                  this.deleteRating();
+                }}
+              >
+                Delete Rating
+              </Button>
+
               <Button
                 style={{ margin: 10 }}
                 onPress={() => {
@@ -119,6 +188,7 @@ export default class MovieDetails extends Component {
                 Add to Watchlist
               </Button>
             </Card>
+
             <MovieReviews id={this.props.navigation.state.params.id} />
           </Layout>
         </ScrollView>
