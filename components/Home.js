@@ -4,6 +4,17 @@ import { Image } from "react-native-elements";
 var self;
 
 export default class Home extends Component {
+  static navigationOptions = {
+    title: "Home",
+    headerStyle: {
+      backgroundColor: "#f4511e"
+    },
+    headerTintColor: "#fff",
+    headerTitleStyle: {
+      fontWeight: "bold"
+    }
+  };
+  
   constructor(props) {
     super(props);
     this.state = {

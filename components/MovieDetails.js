@@ -5,6 +5,16 @@ import MovieReviews from "./MovieReviews";
 var self;
 
 export default class MovieDetails extends Component {
+  static navigationOptions = {
+    title: 'Movie Details',
+    headerStyle: {
+      backgroundColor: '#f4511e',
+    },
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    },
+  };
   constructor(props) {
     super(props);
 
@@ -63,8 +73,10 @@ export default class MovieDetails extends Component {
                   "https://image.tmdb.org/t/p/original" + movieData.poster_path
               }}
             />
+            <Text>Id: {movieData.id}</Text>
             <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
             <Text>Budget: {movieData.budget}</Text>
+            <Text>Rating:{movieData.vote_average}</Text>
           </Card>
           <MovieReviews id={this.props.navigation.state.params.id} />
         </Layout>
