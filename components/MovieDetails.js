@@ -1,19 +1,21 @@
 import React, { Component } from "react";
 import { Layout, Text } from "react-native-ui-kitten";
 import { Image, Card } from "react-native-elements";
+import { ScrollView } from "react-native";
 import MovieReviews from "./MovieReviews";
+
 var self;
 
 export default class MovieDetails extends Component {
   static navigationOptions = {
-    title: 'Movie Details',
+    title: "Movie Details",
     headerStyle: {
-      backgroundColor: '#f4511e',
+      backgroundColor: "#f4511e"
     },
-    headerTintColor: '#fff',
+    headerTintColor: "#fff",
     headerTitleStyle: {
-      fontWeight: 'bold',
-    },
+      fontWeight: "bold"
+    }
   };
   constructor(props) {
     super(props);
@@ -65,21 +67,24 @@ export default class MovieDetails extends Component {
       );
     } else {
       return (
-        <Layout style={{ flex: 2 }}>
-          <Card title={movieData.title}>
-            <Image
-              source={{
-                uri:
-                  "https://image.tmdb.org/t/p/original" + movieData.poster_path
-              }}
-            />
-            <Text>Id: {movieData.id}</Text>
-            <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
-            <Text>Budget: {movieData.budget}</Text>
-            <Text>Rating:{movieData.vote_average}</Text>
-          </Card>
-          <MovieReviews id={this.props.navigation.state.params.id} />
-        </Layout>
+        <ScrollView>
+          <Layout style={{ flex: 2 }}>
+            <Card title={movieData.title}>
+              <Image
+                source={{
+                  uri:
+                    "https://image.tmdb.org/t/p/original" +
+                    movieData.poster_path
+                }}
+              />
+              <Text>Id: {movieData.id}</Text>
+              <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
+              <Text>Budget: {movieData.budget}</Text>
+              <Text>Rating:{movieData.vote_average}</Text>
+            </Card>
+            <MovieReviews id={this.props.navigation.state.params.id} />
+          </Layout>
+        </ScrollView>
       );
     }
   }

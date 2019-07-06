@@ -15,12 +15,14 @@ import Login from "./components/Login";
 import Second from "./components/Second";
 import Home from "./components/Home";
 import MovieDetails from "./components/MovieDetails";
+import Watchlist from "./components/Watchlist";
 
 const ApplicationNavigator = createStackNavigator(
   {
     Home: Home,
     Second: Second,
-    MovieDetails: MovieDetails
+    MovieDetails: MovieDetails,
+    Watchlist: Watchlist
   },
   { initialRouteName: "Home" }
 );
