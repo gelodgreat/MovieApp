@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Layout, Text, Button, Input } from "react-native-ui-kitten";
+import { Layout, Text } from "react-native-ui-kitten";
 import { Image, Card } from "react-native-elements";
+import MovieReviews from "./MovieReviews";
 var self;
 
 export default class MovieDetails extends Component {
@@ -9,44 +10,65 @@ export default class MovieDetails extends Component {
 
     this.state = {
       movieId: this.props.navigation.state.params.id,
-      movieDetails: {}
+      movieDetails: {},
+      loading: true
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     self = this;
-    this.getMovieDetails();
+    var movieDetailsData = await this.getMovieDetails();
+
+    self.setState({
+      movieDetails: movieDetailsData,
+      loading: false
+    });
   }
 
-  async getMovieDetails() {
-    try {
-      var response = await fetch(
-        "https://api.themoviedb.org/3/movie/" +
-          this.state.movieId +
-          "?api_key=f95f50d1981cb3d3febf773bf6938429&language=en-US"
-      ).catch(error => {
-        console.error(error);
-      });
-      var jsonized = await response.json();
-      this.setState({ movieDetails: jsonized });
-    } catch (error) {}
+  getMovieDetails() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        var response = await fetch(
+          "https://api.themoviedb.org/3/movie/" +
+            this.state.movieId +
+            "?api_key=f95f50d1981cb3d3febf773bf6938429&language=en-US"
+        ).catch(error => {
+          console.error(error);
+        });
+
+        resolve(await response.json());
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
   }
 
   render() {
     const movieData = this.state.movieDetails;
-    return (
-      <Layout style={{ flex: 2 }}>
-        <Card title={movieData.title}>
-          <Image
-            source={{
-              uri: "https://image.tmdb.org/t/p/original" + movieData.poster_path
-            }}
-          />
-          <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
 
-          <Text>Budget: {movieData.budget}</Text>
-        </Card>
-      </Layout>
-    );
+    if (this.state.loading) {
+      return (
+        <Layout>
+          <Text>Loading...</Text>
+        </Layout>
+      );
+    } else {
+      return (
+        <Layout style={{ flex: 2 }}>
+          <Card title={movieData.title}>
+            <Image
+              source={{
+                uri:
+                  "https://image.tmdb.org/t/p/original" + movieData.poster_path
+              }}
+            />
+            <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
+            <Text>Budget: {movieData.budget}</Text>
+          </Card>
+          <MovieReviews id={this.props.navigation.state.params.id} />
+        </Layout>
+      );
+    }
   }
 }
