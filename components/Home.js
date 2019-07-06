@@ -27,7 +27,6 @@ export default class Home extends Component {
     self = this;
     var trendingMovies = await this.getTrendingMovies();
     const value = await AsyncStorage.getItem('myToken');
-    console.log(value)
     self.setState({ trendingMovies: trendingMovies });
   }
 
