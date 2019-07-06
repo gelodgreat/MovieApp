@@ -1,13 +1,19 @@
 import React, { Component } from "react";
 import { Layout, ListItem, List } from "react-native-ui-kitten";
+import { Image } from "react-native-elements";
 var self;
+
 export default class Home extends Component {
   constructor(props) {
     super(props);
-    self = this;
     this.state = {
       trendingMovies: []
     };
+  }
+
+  componentDidMount() {
+    self = this;
+    this.getTrendingMovies();
   }
 
   async getTrendingMovies() {
@@ -20,10 +26,6 @@ export default class Home extends Component {
       var jsonized = await response.json();
       this.setState({ trendingMovies: jsonized.results });
     } catch (error) {}
-  }
-
-  componentDidMount() {
-    this.getTrendingMovies();
   }
 
   inputChange(input) {
@@ -40,13 +42,27 @@ export default class Home extends Component {
 }
 
 export const ListItemShowcase = props => {
+  const Icon = style => {
+    return (
+      <Image
+        style={style}
+        source={{
+          uri: "https://image.tmdb.org/t/p/original" + props.item.poster_path
+        }}
+      />
+    );
+  };
+
   const { navigate } = self.props.navigation;
   return (
-    <ListItem
-      key={props.item.id}
-      title={props.item.title}
-      description={props.item.overview}
-      onPress={() => navigate("MovieDetails")}
-    />
+    <Layout>
+      <ListItem
+        key={props.item.id}
+        icon={Icon}
+        title={props.item.title}
+        description={props.item.overview}
+        onPress={() => navigate("MovieDetails", { id: props.item.id })}
+      />
+    </Layout>
   );
 };

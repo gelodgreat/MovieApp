@@ -37,7 +37,7 @@ const AppContainer = createAppContainer(AppNavigator);
 
 export default function App() {
   return (
-    <ApplicationProvider mapping={mapping} theme={darkTheme}>
+    <ApplicationProvider mapping={mapping} theme={lightTheme}>
       <Layout style={{ flex: 1 }}>
         <AppContainer />
       </Layout>
