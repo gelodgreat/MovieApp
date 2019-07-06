@@ -66,7 +66,6 @@ export default class MovieDetails extends Component {
         media_id: this.state.movieDetails.id,
         watchlist: true
       };
-      console.log(data);
       var addToWatchListRequest = await fetch(
         "https://api.themoviedb.org/3/account/" +
           accountId +
@@ -81,7 +80,6 @@ export default class MovieDetails extends Component {
         }
       );
       var addToWatchListResponse = await addToWatchListRequest.json();
-      console.log(addToWatchListResponse);
     } catch (error) {
       console.log(error);
     }
