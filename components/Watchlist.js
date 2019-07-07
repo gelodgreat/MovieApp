@@ -62,14 +62,15 @@ export default class Watchlist extends Component {
 }
 
 export const ListItemShowcase = props => {
+  const { id, title, overview } = props.item;
   const { navigate } = self.props.navigation;
   return (
     <Layout>
       <ListItem
-        key={props.item.id}
-        title={props.item.title}
-        description={props.item.overview}
-        onPress={() => navigate("MovieDetails", { id: props.item.id })}
+        key={id}
+        title={title}
+        description={overview}
+        onPress={() => navigate("MovieDetails", { id: id })}
       />
     </Layout>
   );

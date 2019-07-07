@@ -44,7 +44,8 @@ export default class MovieReviews extends Component {
   }
 
   render() {
-    if (this.state.loading) {
+    const { loading, movieReviews } = this.state;
+    if (loading) {
       return (
         <Layout>
           <Text style={(alignSelf = "center")}>Loading...</Text>
@@ -53,7 +54,7 @@ export default class MovieReviews extends Component {
     } else {
       return (
         <Card title="Reviews">
-          <List data={this.state.movieReviews} renderItem={ListItemShowcase} />
+          <List data={movieReviews} renderItem={ListItemShowcase} />
         </Card>
       );
     }
@@ -61,13 +62,10 @@ export default class MovieReviews extends Component {
 }
 
 export const ListItemShowcase = props => {
+  const { id, author, content } = props.item;
   return (
     <Layout>
-      <ListItem
-        key={props.item.id}
-        title={props.item.author}
-        description={props.item.content}
-      />
+      <ListItem key={id} title={author} description={content} />
     </Layout>
   );
 };

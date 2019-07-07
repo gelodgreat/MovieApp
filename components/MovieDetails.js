@@ -138,7 +138,14 @@ export default class MovieDetails extends Component {
   }
 
   render() {
-    const movieData = this.state.movieDetails;
+    const {
+      id,
+      overview,
+      budget,
+      vote_average,
+      title,
+      poster_path
+    } = this.state.movieDetails;
 
     if (this.state.loading) {
       return (
@@ -150,21 +157,21 @@ export default class MovieDetails extends Component {
       return (
         <ScrollView>
           <Layout style={{ flex: 2 }}>
-            <Card title={movieData.title}>
+            <Card title={title}>
               <Image
                 source={{
                   uri:
                     "https://image.tmdb.org/t/p/original" +
-                    movieData.poster_path
+                    poster_path
                 }}
               />
-              <Text>Id: {movieData.id}</Text>
-              <Text style={{ marginBottom: 10 }}>{movieData.overview}</Text>
-              <Text>Budget: {movieData.budget}</Text>
-              <Text>Rating:{movieData.vote_average}</Text>
+              <Text>Id: {id}</Text>
+              <Text style={{ marginBottom: 10 }}>{overview}</Text>
+              <Text>Budget: {budget}</Text>
+              <Text>Rating:{vote_average}</Text>
 
               <Rating
-                id={movieData.id}
+                id={id}
                 showRating
                 style={{ paddingVertical: 10 }}
                 onFinishRating={this.ratingCompleted}

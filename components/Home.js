@@ -26,7 +26,7 @@ export default class Home extends Component {
   async componentDidMount() {
     self = this;
     var trendingMovies = await this.getTrendingMovies();
-    const value = await AsyncStorage.getItem('myToken');
+    const value = await AsyncStorage.getItem("myToken");
     self.setState({ trendingMovies: trendingMovies });
   }
 
@@ -96,12 +96,13 @@ export default class Home extends Component {
 }
 
 export const ListItemShowcase = props => {
+  const { id, title, overview, poster_path } = props.item;
   const Icon = style => {
     return (
       <Image
         style={style}
         source={{
-          uri: "https://image.tmdb.org/t/p/original" + props.item.poster_path
+          uri: "https://image.tmdb.org/t/p/original" + poster_path
         }}
       />
     );
@@ -111,11 +112,11 @@ export const ListItemShowcase = props => {
   return (
     <Layout>
       <ListItem
-        key={props.item.id}
+        key={id}
         icon={Icon}
-        title={props.item.title}
-        description={props.item.overview}
-        onPress={() => navigate("MovieDetails", { id: props.item.id })}
+        title={title}
+        description={overview}
+        onPress={() => navigate("MovieDetails", { id: id })}
       />
     </Layout>
   );
