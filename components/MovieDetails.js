@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { Layout, Text, Button } from "react-native-ui-kitten";
 import { Image, Card } from "react-native-elements";
-import { ScrollView, AsyncStorage } from "react-native";
+import { ScrollView, AsyncStorage, View } from "react-native";
 import MovieReviews from "./MovieReviews";
-import { Rating, AirbnbRating } from "react-native-ratings";
+import { Rating } from "react-native-ratings";
+import AwesomeAlert from "react-native-awesome-alerts";
+
 var mySessionId, accountId, myToken, self;
 
 var self;
@@ -26,9 +28,24 @@ export default class MovieDetails extends Component {
       movieId: this.props.navigation.state.params.id,
       movieDetails: {},
       movieRating: 3,
-      loading: true
+      loading: true,
+      showDeleteAlert: false,
+      successAlert: false,
+      successMessage: ""
     };
   }
+
+  showAlert = () => {
+    this.setState({
+      showDeleteAlert: true
+    });
+  };
+
+  hideAlert = () => {
+    this.setState({
+      showDeleteAlert: false
+    });
+  };
 
   async componentDidMount() {
     self = this;
@@ -80,8 +97,14 @@ export default class MovieDetails extends Component {
           },
           body: JSON.stringify(data)
         }
-      );
+      ).catch(error => {
+        console.error(error);
+      });
       await addToWatchListRequest.json();
+      this.setState({
+        successAlert: true,
+        successMessage: "Success Added to Watchlist"
+      });
     } catch (error) {
       console.log(error);
     }
@@ -92,13 +115,14 @@ export default class MovieDetails extends Component {
   }
 
   async submitRating(rating) {
+    const { id,title } = this.state.movieDetails;
     try {
       var data = {
         value: rating
       };
       var rateMovie = await fetch(
         "https://api.themoviedb.org/3/movie/" +
-          this.state.movieDetails.id +
+          id +
           "/rating?api_key=f95f50d1981cb3d3febf773bf6938429&session_id=" +
           mySessionId,
         {
@@ -108,9 +132,14 @@ export default class MovieDetails extends Component {
           },
           body: JSON.stringify(data)
         }
-      );
+      ).catch(error => {
+        console.error(error);
+      });
       await rateMovie.json();
-      console.log("Success");
+      this.setState({
+        successAlert: true,
+        successMessage: "Success Rated " + title + " with " + rating
+      });
     } catch (error) {
       console.log(error);
     }
@@ -129,9 +158,15 @@ export default class MovieDetails extends Component {
             "Content-Type": "application/json;charset=utf-8"
           }
         }
-      );
+      ).catch(error => {
+        console.error(error);
+      });
+      this.setState({
+        showDeleteAlert: false,
+        successAlert: true,
+        successMessage: "Successfully Deleted Rating"
+      });
       await rateMovie.json();
-      console.log("Success Deletion");
     } catch (error) {
       console.log(error);
     }
@@ -139,13 +174,19 @@ export default class MovieDetails extends Component {
 
   render() {
     const {
+      movieDetails,
+      showDeleteAlert,
+      successAlert,
+      successMessage
+    } = this.state;
+    const {
       id,
       overview,
       budget,
       vote_average,
       title,
       poster_path
-    } = this.state.movieDetails;
+    } = movieDetails;
 
     if (this.state.loading) {
       return (
@@ -156,48 +197,74 @@ export default class MovieDetails extends Component {
     } else {
       return (
         <ScrollView>
-          <Layout style={{ flex: 2 }}>
-            <Card title={title}>
-              <Image
-                source={{
-                  uri:
-                    "https://image.tmdb.org/t/p/original" +
-                    poster_path
-                }}
-              />
-              <Text>Id: {id}</Text>
-              <Text style={{ marginBottom: 10 }}>{overview}</Text>
-              <Text>Budget: {budget}</Text>
-              <Text>Rating:{vote_average}</Text>
+          <View>
+            <Layout style={{ flex: 1 }}>
+              <Card title={title}>
+                <Image
+                  source={{
+                    uri: "https://image.tmdb.org/t/p/original" + poster_path
+                  }}
+                />
+                <Text>Id: {id}</Text>
+                <Text style={{ marginBottom: 10 }}>{overview}</Text>
+                <Text>Budget: {budget}</Text>
+                <Text>Rating:{vote_average}</Text>
+                <Rating
+                  id={id}
+                  showRating
+                  style={{ paddingVertical: 10 }}
+                  onFinishRating={this.ratingCompleted}
+                />
+                <Button
+                  style={{ margin: 10 }}
+                  status="danger"
+                  onPress={() => {
+                    this.showAlert();
+                  }}
+                >
+                  Delete Rating
+                </Button>
+                <Button
+                  style={{ margin: 10 }}
+                  onPress={() => {
+                    this.addToWatchList();
+                  }}
+                >
+                  Add to Watchlist
+                </Button>
+                <AwesomeAlert
+                  show={showDeleteAlert}
+                  showProgress={false}
+                  title="Delete Rating"
+                  message="Are you sure you want to delete?"
+                  closeOnTouchOutside={true}
+                  closeOnHardwareBackPress={false}
+                  showCancelButton={true}
+                  showConfirmButton={true}
+                  cancelText="No, cancel"
+                  confirmText="Yes, delete it"
+                  confirmButtonColor="#DD6B55"
+                  onCancelPressed={() => {
+                    this.hideAlert();
+                  }}
+                  onConfirmPressed={() => {
+                    this.deleteRating();
+                  }}
+                />
 
-              <Rating
-                id={id}
-                showRating
-                style={{ paddingVertical: 10 }}
-                onFinishRating={this.ratingCompleted}
-              />
-              <Button
-                style={{ margin: 10 }}
-                status="danger"
-                onPress={() => {
-                  this.deleteRating();
-                }}
-              >
-                Delete Rating
-              </Button>
+                <AwesomeAlert
+                  show={successAlert}
+                  showProgress={false}
+                  message={successMessage}
+                  onDismiss={() => {
+                    this.setState({ successAlert: false });
+                  }}
+                />
+              </Card>
 
-              <Button
-                style={{ margin: 10 }}
-                onPress={() => {
-                  this.addToWatchList();
-                }}
-              >
-                Add to Watchlist
-              </Button>
-            </Card>
-
-            <MovieReviews id={this.props.navigation.state.params.id} />
-          </Layout>
+              <MovieReviews id={this.props.navigation.state.params.id} />
+            </Layout>
+          </View>
         </ScrollView>
       );
     }

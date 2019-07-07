@@ -1,15 +1,17 @@
 import React, { Component } from "react";
 import { Layout, Text, Button, Input } from "react-native-ui-kitten";
-import { AsyncStorage, View } from "react-native";
+import { AsyncStorage, Image } from "react-native";
 var loginToken;
 import AwesomeAlert from "react-native-awesome-alerts";
+
 export default class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: "carions46",
-      password: "@carions46",
-      loading: false
+      username: "",
+      password: "",
+      loading: false,
+      initialLoad: false
     };
   }
 
@@ -33,6 +35,7 @@ export default class Login extends Component {
   componentWillUnmount() {
     this.setState({ loading: false });
   }
+
   getToken() {
     return new Promise(async (resolve, reject) => {
       try {
@@ -42,6 +45,9 @@ export default class Login extends Component {
           console.error(error);
         });
         var jsonized = await token.json();
+        this.setState({
+          initialLoad: true
+        });
         resolve(jsonized);
       } catch (error) {
         console.log(error);
@@ -67,7 +73,9 @@ export default class Login extends Component {
             },
             body: JSON.stringify(data)
           }
-        );
+        ).catch(error => {
+          console.error(error);
+        });
         var createSessionResponse = await createNewSessionRequest.json();
         if (createSessionResponse.success) {
           resolve(createSessionResponse.session_id);
@@ -97,7 +105,9 @@ export default class Login extends Component {
           },
           body: JSON.stringify(data)
         }
-      );
+      ).catch(error => {
+        console.error(error);
+      });
       var loginResponse = await loginRequest.json();
       if (loginResponse.success == true) {
         var session_id = await this.createNewSession(
@@ -135,34 +145,52 @@ export default class Login extends Component {
   }
 
   render() {
-    const { loading, username, password } = this.state;
-    return (
-      <Layout style={{ flex: 2, padding: 10, marginTop: 50 }}>
-        <Text>Username</Text>
-        <Input
-          textContentType="username"
-          onChangeText={username => this.setState({ username })}
-          value={username}
-        />
+    const { loading, username, password, initialLoad } = this.state;
+    if (initialLoad) {
+      return (
+        <Layout style={{ flex: 1, padding: 10 }}>
+          <Image
+            style={{
+              width: 400,
+              height: 200,
+              alignSelf: "center",
+              marginTop: 20
+            }}
+            source={require("../assets/android-versions.jpg")}
+          />
+          <Text style={{ marginTop: 30 }}>Username</Text>
+          <Input
+            textContentType="username"
+            onChangeText={username => this.setState({ username })}
+            value={username}
+          />
 
-        <Text>Password</Text>
-        <Input
-          textContentType="password"
-          onChangeText={password => this.setState({ password })}
-          value={password}
-        />
+          <Text>Password</Text>
+          <Input
+            textContentType="password"
+            secureTextEntry={true}
+            onChangeText={password => this.setState({ password })}
+            value={password}
+          />
 
-        <Button
-          style={{ marginTop: 10 }}
-          onPress={() => {
-            this.validateUser();
-          }}
-        >
-          Log In
-        </Button>
+          <Button
+            style={{ marginTop: 10 }}
+            onPress={() => {
+              this.validateUser();
+            }}
+          >
+            Log In
+          </Button>
 
-        <AwesomeAlert show={loading} showProgress={loading} />
-      </Layout>
-    );
+          <AwesomeAlert
+            show={loading}
+            showProgress={loading}
+            message="Signing In...."
+          />
+        </Layout>
+      );
+    } else {
+      return <Text>Loading...</Text>;
+    }
   }
 }

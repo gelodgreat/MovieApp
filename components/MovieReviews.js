@@ -47,8 +47,8 @@ export default class MovieReviews extends Component {
     const { loading, movieReviews } = this.state;
     if (loading) {
       return (
-        <Layout>
-          <Text style={(alignSelf = "center")}>Loading...</Text>
+        <Layout style={{ alignContent: "center" }}>
+          <Text>Loading...</Text>
         </Layout>
       );
     } else {
